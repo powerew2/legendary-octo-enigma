@@ -177,8 +177,8 @@ public class Board extends JFrame implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         // Initial coordinates of mouse, reversed to follow 2d array format
-        int destRow = e.getY()/100;
-        int destCol = e.getX()/100;
+        int destRow = e.getY() / 100;
+        int destCol = e.getX() / 100;
 
         if (held) {
             if (labels[selRow][selCol].isValidMove(destRow, destCol, labels)) {
