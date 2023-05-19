@@ -238,20 +238,19 @@ public class ChessLabel extends JLabel {
             }
             int rowDiff = destRow - curRow;
             int colDiff = destCol - curCol;
-            int dir = (tag.equals("\u265F")) ? 1 : -1;
             if (labels[destRow][destCol].tag.equals(" ") || !Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
-                if (colDiff == 0 && rowDiff == dir && labels[destRow][destCol].tag.equals(" ")) { // Check if forward direction is empty
-                    return true; // Prevent taking own piece
+                if (colDiff == 0 && rowDiff == -1 && labels[destRow][destCol].tag.equals(" ")) {
+                    return true; // Check if forward direction is empty
                 }
-                if (colDiff == 0 && rowDiff == dir * 2 && ((curRow == 1 && dir == 1) || (curRow == 6 && dir == -1))) { // Check if first row
-                    if (labels[curRow + dir][curCol].tag.equals(" ") && labels[destRow][destCol].tag.equals(" ")) {
+                if (colDiff == 0 && rowDiff == -2 && curRow == 6) { // Check if first row
+                    if (labels[curRow - 1][curCol].tag.equals(" ") && labels[destRow][destCol].tag.equals(" ")) {
                         return true; // Check if both squares in front are empty
                     }
                 }
-                if (Math.abs(colDiff) == 1 && rowDiff == dir && !labels[destRow][destCol].tag.equals(" ")) {
-                    return true;
+                if (Math.abs(colDiff) == 1 && rowDiff == -1 && !labels[destRow][destCol].tag.equals(" ")) {
+                    return true; // Take diagonally
                 }
-            }
+            } // Prevent taking own piece
             return false;
         } // White Pawn
 
@@ -261,20 +260,19 @@ public class ChessLabel extends JLabel {
             }
             int rowDiff = destRow - curRow;
             int colDiff = destCol - curCol;
-            int dir = (tag.equals("\u265F")) ? 1 : -1;
             if (labels[destRow][destCol].tag.equals(" ") || !Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
-                if (colDiff == 0 && rowDiff == dir && labels[destRow][destCol].tag.equals(" ")) { // Check if forward direction is empty
-                    return true; // Prevent taking own piece
+                if (colDiff == 0 && rowDiff == 1 && labels[destRow][destCol].tag.equals(" ")) {
+                    return true; // Check if forward direction is empty
                 }
-                if (colDiff == 0 && rowDiff == dir * 2 && ((curRow == 1 && dir == 1) || (curRow == 6 && dir == -1))) { // Check if first row
-                    if (labels[curRow + dir][curCol].tag.equals(" ") && labels[destRow][destCol].tag.equals(" ")) {
+                if (colDiff == 0 && rowDiff == 2 && curRow == 1) { // Check if first row
+                    if (labels[curRow + 1][curCol].tag.equals(" ") && labels[destRow][destCol].tag.equals(" ")) {
                         return true; // Check if both squares in front are empty
                     }
                 }
-                if (Math.abs(colDiff) == 1 && rowDiff == dir && !labels[destRow][destCol].tag.equals(" ")) {
-                    return true;
+                if (Math.abs(colDiff) == 1 && rowDiff == 1 && !labels[destRow][destCol].tag.equals(" ")) {
+                    return true; // Take diagonally
                 }
-            }
+            } // Prevent taking own piece
             return false;
         } // Black Pawn
 
