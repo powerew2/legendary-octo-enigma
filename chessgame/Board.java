@@ -11,6 +11,8 @@ public class Board extends JFrame implements MouseListener {
     private String symbol, piece;
     private boolean isWhiteTurn;
     private int selRow, selCol;
+    private int wScore, bScore;
+    private int count = 0;
 
     Container contentPane = getContentPane();
     GridLayout gridLayout = new GridLayout(8, 8);
@@ -56,7 +58,7 @@ public class Board extends JFrame implements MouseListener {
     } // Board()
 
     void display() {
-        setTitle("Unicore Chess");
+        setTitle("Material Chess");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(this);
 
@@ -90,6 +92,88 @@ public class Board extends JFrame implements MouseListener {
         repaint(); // Repaint the container to update the GUI
     } // update()
 
+    void check() {
+        int wPieces = 0, bPieces = 0;
+        for (int row = 0; row < labels.length; row++) {
+            for (int col = 0; col < labels[0].length; col++) {
+                if (labels[row][col].type != null && Character.isUpperCase(labels[row][col].type.charAt(0)) && !labels[row][col].type.equals("P")) {
+                    wPieces++; // Check if there are any white pieces left
+                }
+                if (labels[row][col].type != null && Character.isLowerCase(labels[row][col].type.charAt(0)) && !labels[row][col].type.equals("p")) {
+                    bPieces++; // Check if there are any black pieces left
+                }
+            }
+        } // row
+
+        if (wPieces == 0 || bPieces == 0) {
+            end();
+        }
+    }
+
+    void end() {
+        wScore = 0;
+        bScore = 0;
+        for (int row = 0; row < labels.length; row++) {
+            for (int col = 0; col < labels[0].length; col++) {
+                if (labels[row][col].type != null) {
+                    if (labels[row][col].type.equals("R")) {
+                        wScore += 5;
+                    }
+                    if (labels[row][col].type.equals("B")) {
+                        wScore += 3;
+                    }
+                    if (labels[row][col].type.equals("N")) {
+                        wScore += 3;
+                    }
+                    if (labels[row][col].type.equals("Q")) {
+                        wScore += 9;
+                    }
+                    if (labels[row][col].type.equals("K")) {
+                        wScore += 10;
+                    }
+                    if (labels[row][col].type.equals("P")) {
+                        wScore++;
+                    }
+                    if (labels[row][col].type.equals("r")) {
+                        bScore += 5;
+                    }
+                    if (labels[row][col].type.equals("b")) {
+                        bScore += 3;
+                    }
+                    if (labels[row][col].type.equals("n")) {
+                        bScore += 3;
+                    }
+                    if (labels[row][col].type.equals("q")) {
+                        bScore += 9;
+                    }
+                    if (labels[row][col].type.equals("k")) {
+                        bScore += 10;
+                    }
+                    if (labels[row][col].type.equals("p")) {
+                        bScore++;
+                    }
+                } // Rook: 5, Bishop: 3, Knight: 3, Queen: 9, King: 10, Pawn: 1
+            }
+        } // row
+
+        if (wScore > bScore) {
+            System.out.println("White wins!");
+            System.out.println("White: " + wScore);
+            System.out.println("Black: " + bScore);
+            System.out.println();
+        } else if (wScore < bScore) {
+            System.out.println("Black wins!");
+            System.out.println("White: " + wScore);
+            System.out.println("Black: " + bScore);
+            System.out.println();
+        } else {
+            System.out.println("Tie");
+            System.out.println("White: " + wScore);
+            System.out.println("Black: " + bScore);
+            System.out.println();
+        }
+    } // end()
+
     @Override
     public void mouseClicked(MouseEvent e) {
         // Initial coordinates of mouse, reversed to follow 2d array format
@@ -100,10 +184,21 @@ public class Board extends JFrame implements MouseListener {
             if (labels[selRow][selCol].isValidMove(destRow, destCol, labels)) {
                 labels[destRow][destCol] = new ChessLabel(symbol, piece);
                 labels[selRow][selCol] = new ChessLabel(" ", null);
+                if (labels[destRow][destCol].type.equals("P") && destRow == 0) {
+                    labels[destRow][destCol] = new ChessLabel("\u2655", "Q");
+                }
+                if (labels[destRow][destCol].type.equals("p") && destRow == 7) {
+                    labels[destRow][destCol] = new ChessLabel("\u265B", "q");
+                }
                 isWhiteTurn = !isWhiteTurn;
+                count++;
             } // Checks if move is valid based on type of chess piece
+            if (count == 100) {
+                end();
+            } // Ends game after 100 moves
             held = false;
             update();
+            check();
         } else {
             if (isWhiteTurn && labels[destRow][destCol].type != null && Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
                 if (!labels[destRow][destCol].tag.equals(" ")) { // Checks if what's selected is empty
