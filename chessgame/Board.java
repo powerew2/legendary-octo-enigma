@@ -9,12 +9,14 @@ public class Board extends JFrame implements MouseListener {
     private ChessLabel[][] labels;
     private boolean held = false;
     private String symbol, piece;
+    private boolean isWhiteTurn;
     private int selRow, selCol;
 
     Container contentPane = getContentPane();
     GridLayout gridLayout = new GridLayout(8, 8);
 
     public Board() {
+        isWhiteTurn = true;
         labels = new ChessLabel[][] {
             // black
             {new ChessLabel("\u265C", "r"), new ChessLabel("\u265E", "n"), new ChessLabel("\u265D", "b"), 
@@ -54,8 +56,8 @@ public class Board extends JFrame implements MouseListener {
     } // Board()
 
     void display() {
-        setTitle("Unicode Chess");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setTitle("Unicore Chess");
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(this);
 
         contentPane.setLayout(gridLayout);
@@ -82,7 +84,7 @@ public class Board extends JFrame implements MouseListener {
                 }
                 contentPane.add(labels[row][col]);
             }
-        }
+        } // row
 
         revalidate(); // Revalidate the container to reflect the changes
         repaint(); // Repaint the container to update the GUI
@@ -90,25 +92,39 @@ public class Board extends JFrame implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int destRow = e.getY()/100; // Reversed to follow labels[][] format
-        int destCol = e.getX()/100; // Reversed to follow labels[][] format
+        // Initial coordinates of mouse, reversed to follow 2d array format
+        int destRow = e.getY()/100;
+        int destCol = e.getX()/100;
 
         if (held) {
-            if (labels[selRow][selCol].isValidMove(destRow, destCol, labels)) { // Checks if move is valid based on type of chess piece
+            if (labels[selRow][selCol].isValidMove(destRow, destCol, labels)) {
                 labels[destRow][destCol] = new ChessLabel(symbol, piece);
                 labels[selRow][selCol] = new ChessLabel(" ", null);
-            }
+                isWhiteTurn = !isWhiteTurn;
+            } // Checks if move is valid based on type of chess piece
             held = false;
             update();
         } else {
-            if (!labels[destRow][destCol].tag.equals(" ")) { // Checks if what's selected is empty
-                symbol = labels[destRow][destCol].tag;
-                piece = labels[destRow][destCol].type;
-                selRow = destRow; // Initialize variable for later
-                selCol = destCol; // Initialize variable for later
-                held = true;
-                update();
-            }
+            if (isWhiteTurn && labels[destRow][destCol].type != null && Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
+                if (!labels[destRow][destCol].tag.equals(" ")) { // Checks if what's selected is empty
+                    symbol = labels[destRow][destCol].tag;
+                    piece = labels[destRow][destCol].type;
+                    selRow = destRow;
+                    selCol = destCol;
+                    held = true;
+                    update();
+                }
+            } // Check if correct turn
+            if (!isWhiteTurn && labels[destRow][destCol].type != null && Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
+                if (!labels[destRow][destCol].tag.equals(" ")) { // Checks if what's selected is empty
+                    symbol = labels[destRow][destCol].tag;
+                    piece = labels[destRow][destCol].type;
+                    selRow = destRow;
+                    selCol = destCol;
+                    held = true;
+                    update();
+                }
+            } // Check if correct turn
         }
     } // mouseClicked()
 
