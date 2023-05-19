@@ -26,7 +26,7 @@ public class ChessLabel extends JLabel {
     } // set()
 
     boolean isValidMove(int destRow, int destCol, ChessLabel[][] labels) {
-        if (type.equals("R") || type.equals("r")) {
+        if (type.equals("R")) {
             if (destRow == curRow && destCol == curCol) {
                 return false;
             }
@@ -49,18 +49,50 @@ public class ChessLabel extends JLabel {
                         }
                     }
                 }
-                return true;
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
             }
             return false;
-        } // Rook
-    
-        if (type.equals("B") || type.equals("b")) {
+        } // White Rook
+
+        if (type.equals("r")) {
             if (destRow == curRow && destCol == curCol) {
                 return false;
             }
-            int rowDif = Math.abs(destRow - curRow);
-            int colDif = Math.abs(destCol - curCol);
-            if (rowDif == colDif) {
+            if (destRow == curRow || destCol == curCol) {
+                int start, end;
+                if (destRow == curRow) {
+                    start = Math.min(curCol, destCol) + 1;
+                    end = Math.max(curCol, destCol);
+                    for (int col = start; col < end; col++) {
+                        if (!labels[curRow][col].tag.equals(" ")) {
+                            return false; // Obstacle found
+                        }
+                    }
+                } else {
+                    start = Math.min(curRow, destRow) + 1;
+                    end = Math.max(curRow, destRow);
+                    for (int row = start; row < end; row++) {
+                        if (!labels[row][curCol].tag.equals(" ")) {
+                            return false; // Obstacle found
+                        }
+                    }
+                }
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
+            }
+            return false;
+        } // Black Rook
+    
+        if (type.equals("B")) {
+            if (destRow == curRow && destCol == curCol) {
+                return false;
+            }
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if (rowDiff == colDiff) {
                 int rowDir = (destRow > curRow) ? 1 : -1;
                 int colDir = (destCol > curCol) ? 1 : -1;
                 int row = curRow + rowDir;
@@ -72,24 +104,63 @@ public class ChessLabel extends JLabel {
                     row += rowDir;
                     col += colDir;
                 }
-                return true;
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
             }
             return false;
-        } // Bishop
+        } // White Bishop
 
-        if (type.equals("N") || type.equals("n")) {
-            int rowDif = Math.abs(destRow - curRow);
-            int colDif = Math.abs(destCol - curCol);
-            return (rowDif == 2 && colDif == 1) || (rowDif == 1 && colDif == 2);
-        } // Knight
-
-        if (type.equals("Q") || type.equals("q")) {
+        if (type.equals("b")) {
             if (destRow == curRow && destCol == curCol) {
                 return false;
             }
-            int rowDif = Math.abs(destRow - curRow);
-            int colDif = Math.abs(destCol - curCol);
-            if (destRow == curRow || destCol == curCol || rowDif == colDif) {
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if (rowDiff == colDiff) {
+                int rowDir = (destRow > curRow) ? 1 : -1;
+                int colDir = (destCol > curCol) ? 1 : -1;
+                int row = curRow + rowDir;
+                int col = curCol + colDir;
+                while (row != destRow && col != destCol) {
+                    if (!labels[row][col].tag.equals(" ")) {
+                        return false; // Obstacle found
+                    }
+                    row += rowDir;
+                    col += colDir;
+                }
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
+            }
+            return false;
+        } // Black Bishop
+
+        if (type.equals("N")) {
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if (labels[destRow][destCol].tag.equals(" ") || !Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
+                return (rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2); // Prevent taking own piece
+            }
+            return false;
+        } // White Knight
+
+        if (type.equals("n")) {
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if (labels[destRow][destCol].tag.equals(" ") || !Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
+                return (rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2); // Prevent taking own piece
+            }
+            return false;
+        } // Black Knight
+
+        if (type.equals("Q")) {
+            if (destRow == curRow && destCol == curCol) {
+                return false;
+            }
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if (destRow == curRow || destCol == curCol || rowDiff == colDiff) {
                 int rowDir = (destRow > curRow) ? 1 : (destRow < curRow) ? -1 : 0;
                 int colDir = (destCol > curCol) ? 1 : (destCol < curCol) ? -1 : 0;
                 int row = curRow + rowDir;
@@ -101,43 +172,112 @@ public class ChessLabel extends JLabel {
                     row += rowDir;
                     col += colDir;
                 }
-                return true;
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
             }
             return false;
-        } // Queen
+        } // White Queen
 
-        if (type.equals("K") || type.equals("k")) { // No obstacles
+        if (type.equals("q")) {
             if (destRow == curRow && destCol == curCol) {
                 return false;
             }
-            int rowDif = Math.abs(destRow - curRow);
-            int colDif = Math.abs(destCol - curCol);
-            if ((rowDif == 1 && colDif == 0) || (rowDif == 0 && colDif == 1) || (rowDif == 1 && colDif == 1)) {
-                return true;
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if (destRow == curRow || destCol == curCol || rowDiff == colDiff) {
+                int rowDir = (destRow > curRow) ? 1 : (destRow < curRow) ? -1 : 0;
+                int colDir = (destCol > curCol) ? 1 : (destCol < curCol) ? -1 : 0;
+                int row = curRow + rowDir;
+                int col = curCol + colDir;
+                while (row != destRow || col != destCol) {
+                    if (!labels[row][col].tag.equals(" ")) {
+                        return false; // Obstacle found
+                    }
+                    row += rowDir;
+                    col += colDir;
+                }
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
             }
             return false;
-        } // King
+        } // Black Queen
 
-        if (type.equals("P") || type.equals("p")) {
+        if (type.equals("K")) {
             if (destRow == curRow && destCol == curCol) {
                 return false;
             }
-            int rowDif = destRow - curRow;
-            int colDif = destCol - curCol;
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if ((rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1) || (rowDiff == 1 && colDiff == 1)) {
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
+            }
+            return false;
+        } // White King
+
+        if (type.equals("k")) {
+            if (destRow == curRow && destCol == curCol) {
+                return false;
+            }
+            int rowDiff = Math.abs(destRow - curRow);
+            int colDiff = Math.abs(destCol - curCol);
+            if ((rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1) || (rowDiff == 1 && colDiff == 1)) {
+                if (labels[destRow][destCol].tag.equals(" ") || !Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
+                    return true; // Prevent taking own piece
+                }
+            }
+            return false;
+        } // Black King
+
+        if (type.equals("P")) {
+            if (destRow == curRow && destCol == curCol) {
+                return false;
+            }
+            int rowDiff = destRow - curRow;
+            int colDiff = destCol - curCol;
             int dir = (tag.equals("\u265F")) ? 1 : -1;
-            if (colDif == 0 && rowDif == dir && labels[destRow][destCol].tag.equals(" ")) { // Check if forward direction is empty
-                return true;
-            }
-            if (colDif == 0 && rowDif == dir * 2 && ((curRow == 1 && dir == 1) || (curRow == 6 && dir == -1))) { // For the first move, check if both squares in front are empty
-                if (labels[curRow + dir][curCol].tag.equals(" ") && labels[destRow][destCol].tag.equals(" ")) {
+            if (labels[destRow][destCol].tag.equals(" ") || !Character.isUpperCase(labels[destRow][destCol].type.charAt(0))) {
+                if (colDiff == 0 && rowDiff == dir && labels[destRow][destCol].tag.equals(" ")) { // Check if forward direction is empty
+                    return true; // Prevent taking own piece
+                }
+                if (colDiff == 0 && rowDiff == dir * 2 && ((curRow == 1 && dir == 1) || (curRow == 6 && dir == -1))) { // Check if first row
+                    if (labels[curRow + dir][curCol].tag.equals(" ") && labels[destRow][destCol].tag.equals(" ")) {
+                        return true; // Check if both squares in front are empty
+                    }
+                }
+                if (Math.abs(colDiff) == 1 && rowDiff == dir && !labels[destRow][destCol].tag.equals(" ")) {
                     return true;
                 }
             }
-            if (Math.abs(colDif) == 1 && rowDif == dir && !labels[destRow][destCol].tag.equals(" ")) {
-                return true;
+            return false;
+        } // White Pawn
+
+        if (type.equals("p")) {
+            if (destRow == curRow && destCol == curCol) {
+                return false;
+            }
+            int rowDiff = destRow - curRow;
+            int colDiff = destCol - curCol;
+            int dir = (tag.equals("\u265F")) ? 1 : -1;
+            if (labels[destRow][destCol].tag.equals(" ") || !Character.isLowerCase(labels[destRow][destCol].type.charAt(0))) {
+                if (colDiff == 0 && rowDiff == dir && labels[destRow][destCol].tag.equals(" ")) { // Check if forward direction is empty
+                    return true; // Prevent taking own piece
+                }
+                if (colDiff == 0 && rowDiff == dir * 2 && ((curRow == 1 && dir == 1) || (curRow == 6 && dir == -1))) { // Check if first row
+                    if (labels[curRow + dir][curCol].tag.equals(" ") && labels[destRow][destCol].tag.equals(" ")) {
+                        return true; // Check if both squares in front are empty
+                    }
+                }
+                if (Math.abs(colDiff) == 1 && rowDiff == dir && !labels[destRow][destCol].tag.equals(" ")) {
+                    return true;
+                }
             }
             return false;
-        } // Pawn
+        } // Black Pawn
+
         return true;
     } // isValidMove()
 } // class ChessLabel
